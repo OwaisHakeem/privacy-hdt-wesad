@@ -1,0 +1,95 @@
+# =====================================================================
+# A1 - Split configuration
+# Project: privacy_hdt_wesad
+# Purpose: single source of truth for how data are partitioned.
+#          Every downstream stage (baselines, FedAvg, DP-FedAvg, MIA,
+#          Ditto-in-loop) consumes the manifests produced from this file,
+#          so protocol drift between stages becomes impossible.
+#
+# Matched against the real stage-01 output schema (01_build_dataset.py).
+# =====================================================================
+
+input:
+  # Windowed feature table produced by stage 01.
+  windows_path: "data/processed/wesad_windows.csv"
+
+  # Column names as emitted by stage 01.
+  subject_col: "subject_id"            # string ids: "S2" ... "S17"
+  label_col: "original_wesad_label"    # raw protocol label 1..4
+  order_col: "start_sec"               # temporal order within a subject
+
+  # Features are selected by WHITELIST, never by exclusion. Stage 01 emits
+  # numeric non-feature columns (window_id, start_sample_chest, end_sec,
+  # window_seconds, original_wesad_label, and one *_label column per task).
+  # Selecting "numeric and not blacklisted" would admit all of them - which
+  # is how the label reached the input matrix in the old centralised
+  # baseline. A whitelist fails closed.
+  feature_prefixes: ["chest_", "wrist_"]
+  drop_cols: []
+
+output:
+  splits_dir: "data/processed/splits"
+  manifest_name: "manifest.json"
+  summary_name: "split_summary.csv"
+
+cohort:
+  # WESAD ships 15 usable subjects; S1 and S12 are not released.
+  subjects: ["S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10",
+             "S11", "S13", "S14", "S15", "S16", "S17"]
+
+task:
+  # Primary reported task. Binary is retained as a secondary/ablation view
+  # and is derived from the same windows, never from a separate pipeline.
+  primary: "multiclass"
+
+  multiclass:
+    # WESAD protocol labels -> contiguous class ids
+    label_map: {1: 0, 2: 1, 3: 2, 4: 3}
+    class_names: ["baseline", "stress", "amusement", "meditation"]
+
+  binary:
+    positive_labels: [2]          # stress
+    negative_labels: [1, 3, 4]
+    class_names: ["non_stress", "stress"]
+
+  # Stage 01 already discards labels 0 and 5-7; this is a safety net.
+  keep_raw_labels: [1, 2, 3, 4]
+
+protocol_loso:
+  enabled: true
+  # Subject-level validation: validation subjects are held out entirely,
+  # so the validation condition mirrors the test condition (unseen person).
+  n_val_subjects: 2
+  # Deterministic rotation rather than a random draw. For test subject at
+  # cohort index i, validation subjects are at (i+1) and (i+2) mod N.
+  # Every subject therefore serves as validation exactly twice across the
+  # 15 folds, so no subject exerts undue influence on the stopping rule.
+  val_assignment: "rotation"
+
+protocol_within_subject:
+  enabled: true
+  # Chronological, per condition block. Random splitting is NOT used:
+  # consecutive 10 s windows are strongly autocorrelated, so a random
+  # split leaks near-duplicate windows across the boundary.
+  fractions: {train: 0.6, val: 0.2, test: 0.2}
+  # Windows discarded either side of each boundary to break autocorrelation.
+  buffer_windows: 2
+
+normalisation:
+  # Declared here, applied downstream, so no stage may choose its own.
+  #   "per_subject"  : each subject standardised on their own statistics.
+  #                    Federation-compatible (no raw data leaves the client)
+  #                    and matches deployment, where a new user's device
+  #                    calibrates on its own recording. Labels are never
+  #                    used, so this is not label leakage.
+  #   "global_train" : one scaler fitted on pooled training subjects.
+  #                    Violates the federated threat model; retained only
+  #                    as a centralised-baseline comparator.
+  strategy: "per_subject"
+
+reproducibility:
+  # Splits are deliberately INDEPENDENT of the training seed. Seeds vary
+  # model initialisation, client sampling and DP noise only, so reported
+  # variance reflects training stochasticity rather than partition luck.
+  split_seed: 20260716
+  hash_input: true

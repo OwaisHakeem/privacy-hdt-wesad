@@ -1,0 +1,16 @@
+# Derived WESAD data: not redistributable, and reproducible from stage 01.
+# Traceability comes from input_sha256 in splits/manifest.json, not from git.
+data/raw/*
+data/processed/*.csv
+data/processed/clients/
+data/processed/cache/
+
+# Split manifests ARE tracked - they are the protocol.
+!data/processed/splits/**/*.json
+!data/processed/splits/*.csv
+
+results/logs/*.log
+_legacy/
+__pycache__/
+*.pyc
+.venv/
