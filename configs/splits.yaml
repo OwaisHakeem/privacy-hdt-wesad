@@ -87,6 +87,18 @@ normalisation:
   #                    as a centralised-baseline comparator.
   strategy: "per_subject"
 
+  # Which of a subject's own windows supply their statistics.
+  #   "all"           : the subject's whole recording. For the LOSO test
+  #                     subject this is mildly transductive (no labels are
+  #                     used, so it is not label leakage) and must be stated
+  #                     in the Methods.
+  #   "baseline_only" : statistics restricted to the subject's baseline
+  #                     condition. Stricter, and corresponds to a device
+  #                     calibrating on a resting period before use. Retained
+  #                     as a pre-emptive answer to the obvious reviewer
+  #                     objection; run as an ablation at stage G.
+  per_subject_calibration: "all"
+
 reproducibility:
   # Splits are deliberately INDEPENDENT of the training seed. Seeds vary
   # model initialisation, client sampling and DP noise only, so reported

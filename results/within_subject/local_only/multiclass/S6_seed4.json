@@ -1,0 +1,78 @@
+{
+  "seed": 4,
+  "n_train": 167,
+  "n_val": 41,
+  "n_test": 54,
+  "classes_in_train": 4,
+  "best_epoch": 16,
+  "epochs_run": 36,
+  "best_val_macro_f1": 0.8633134413185564,
+  "test": {
+    "accuracy": 0.9444444444444444,
+    "balanced_accuracy": 0.9226190476190477,
+    "macro_f1": 0.9175213675213676,
+    "weighted_f1": 0.9453624564735674,
+    "per_class": {
+      "baseline": {
+        "precision": 0.9565217391304348,
+        "recall": 1.0,
+        "f1": 0.9777777777777777,
+        "support": 22
+      },
+      "stress": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "amusement": {
+        "precision": 0.7142857142857143,
+        "recall": 0.8333333333333334,
+        "f1": 0.7692307692307693,
+        "support": 6
+      },
+      "meditation": {
+        "precision": 1.0,
+        "recall": 0.8571428571428571,
+        "f1": 0.9230769230769231,
+        "support": 14
+      }
+    },
+    "confusion_matrix": [
+      [
+        22,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        12,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        5,
+        0
+      ],
+      [
+        0,
+        0,
+        2,
+        12
+      ]
+    ],
+    "n_samples": 54,
+    "auc_ovr_macro": 0.9834674873737373
+  },
+  "subject": "S6",
+  "protocol": "within_subject",
+  "task": "multiclass",
+  "provenance": {
+    "stage": "A3_local_only",
+    "created_utc": "2026-07-17T00:35:20+00:00",
+    "git_revision": "7c554e5"
+  }
+}

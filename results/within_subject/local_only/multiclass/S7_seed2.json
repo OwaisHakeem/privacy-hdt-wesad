@@ -1,0 +1,78 @@
+{
+  "seed": 2,
+  "n_train": 166,
+  "n_val": 41,
+  "n_test": 54,
+  "classes_in_train": 4,
+  "best_epoch": 5,
+  "epochs_run": 25,
+  "best_val_macro_f1": 1.0,
+  "test": {
+    "accuracy": 0.9814814814814815,
+    "balanced_accuracy": 0.9886363636363636,
+    "macro_f1": 0.9841860465116279,
+    "weighted_f1": 0.9816365202411714,
+    "per_class": {
+      "baseline": {
+        "precision": 1.0,
+        "recall": 0.9545454545454546,
+        "f1": 0.9767441860465116,
+        "support": 22
+      },
+      "stress": {
+        "precision": 0.9230769230769231,
+        "recall": 1.0,
+        "f1": 0.96,
+        "support": 12
+      },
+      "amusement": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 6
+      },
+      "meditation": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 14
+      }
+    },
+    "confusion_matrix": [
+      [
+        21,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        12,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        6,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        14
+      ]
+    ],
+    "n_samples": 54,
+    "auc_ovr_macro": 0.9995039682539683
+  },
+  "subject": "S7",
+  "protocol": "within_subject",
+  "task": "multiclass",
+  "provenance": {
+    "stage": "A3_local_only",
+    "created_utc": "2026-07-17T00:35:21+00:00",
+    "git_revision": "7c554e5"
+  }
+}

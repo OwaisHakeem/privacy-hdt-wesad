@@ -3,7 +3,7 @@ import json
 import pickle
 import numpy as np
 import pandas as pd
-RAW_DIR = Path("D:/Projects/raw_wesad/WESAD")
+RAW_DIR = Path("data/raw/WESAD")
 OUTPUT_DIR = Path("data/processed")
 CLIENT_DIR = Path("data/processed/clients")
 TABLE_DIR = Path("results/tables")

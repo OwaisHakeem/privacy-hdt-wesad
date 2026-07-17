@@ -1,0 +1,146 @@
+{
+  "seed": 3,
+  "n_train": 3536,
+  "n_val": 587,
+  "n_test": 296,
+  "class_weights": [
+    0.6346015930175781,
+    1.1204055547714233,
+    2.0462963581085205,
+    0.9587852358818054
+  ],
+  "best_epoch": 17,
+  "epochs_run": 37,
+  "best_val_macro_f1": 0.9433730712585462,
+  "val": {
+    "accuracy": 0.9540034071550255,
+    "balanced_accuracy": 0.9515484515484516,
+    "macro_f1": 0.9433730712585462,
+    "weighted_f1": 0.9540219274591892,
+    "per_class": {
+      "baseline": {
+        "precision": 0.9870689655172413,
+        "recall": 0.9786324786324786,
+        "f1": 0.9828326180257511,
+        "support": 234
+      },
+      "stress": {
+        "precision": 0.9202898550724637,
+        "recall": 1.0,
+        "f1": 0.9584905660377359,
+        "support": 127
+      },
+      "amusement": {
+        "precision": 0.8607594936708861,
+        "recall": 0.9444444444444444,
+        "f1": 0.9006622516556292,
+        "support": 72
+      },
+      "meditation": {
+        "precision": 0.9855072463768116,
+        "recall": 0.8831168831168831,
+        "f1": 0.9315068493150684,
+        "support": 154
+      }
+    },
+    "confusion_matrix": [
+      [
+        229,
+        1,
+        4,
+        0
+      ],
+      [
+        0,
+        127,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        68,
+        2
+      ],
+      [
+        1,
+        10,
+        7,
+        136
+      ]
+    ],
+    "n_samples": 587
+  },
+  "test": {
+    "accuracy": 0.7837837837837838,
+    "balanced_accuracy": 0.6710479063420239,
+    "macro_f1": 0.6671298027901462,
+    "weighted_f1": 0.7802098666544633,
+    "per_class": {
+      "baseline": {
+        "precision": 0.9914529914529915,
+        "recall": 0.9747899159663865,
+        "f1": 0.9830508474576272,
+        "support": 119
+      },
+      "stress": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 63
+      },
+      "amusement": {
+        "precision": 0.06451612903225806,
+        "recall": 0.05555555555555555,
+        "f1": 0.05970149253731343,
+        "support": 36
+      },
+      "meditation": {
+        "precision": 0.6,
+        "recall": 0.6538461538461539,
+        "f1": 0.6257668711656442,
+        "support": 78
+      }
+    },
+    "confusion_matrix": [
+      [
+        116,
+        0,
+        3,
+        0
+      ],
+      [
+        0,
+        63,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        2,
+        34
+      ],
+      [
+        1,
+        0,
+        26,
+        51
+      ]
+    ],
+    "n_samples": 296,
+    "auc_ovr_macro": 0.9343218874534333
+  },
+  "model": {
+    "n_parameters": 27076,
+    "state_bytes": 108304
+  },
+  "split": "fold_03",
+  "protocol": "loso",
+  "task": "multiclass",
+  "provenance": {
+    "stage": "A3_centralised",
+    "created_utc": "2026-07-17T00:13:12+00:00",
+    "git_revision": "7c554e5"
+  }
+}

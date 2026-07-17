@@ -1,0 +1,78 @@
+{
+  "seed": 2,
+  "n_train": 162,
+  "n_val": 40,
+  "n_test": 54,
+  "classes_in_train": 4,
+  "best_epoch": 2,
+  "epochs_run": 22,
+  "best_val_macro_f1": 1.0,
+  "test": {
+    "accuracy": 0.9444444444444444,
+    "balanced_accuracy": 0.9356060606060607,
+    "macro_f1": 0.9411744169808686,
+    "weighted_f1": 0.9454090314305367,
+    "per_class": {
+      "baseline": {
+        "precision": 1.0,
+        "recall": 0.9090909090909091,
+        "f1": 0.9523809523809523,
+        "support": 22
+      },
+      "stress": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 12
+      },
+      "amusement": {
+        "precision": 1.0,
+        "recall": 0.8333333333333334,
+        "f1": 0.9090909090909091,
+        "support": 6
+      },
+      "meditation": {
+        "precision": 0.8235294117647058,
+        "recall": 1.0,
+        "f1": 0.9032258064516129,
+        "support": 14
+      }
+    },
+    "confusion_matrix": [
+      [
+        20,
+        0,
+        0,
+        2
+      ],
+      [
+        0,
+        12,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        5,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        14
+      ]
+    ],
+    "n_samples": 54,
+    "auc_ovr_macro": 1.0
+  },
+  "subject": "S3",
+  "protocol": "within_subject",
+  "task": "multiclass",
+  "provenance": {
+    "stage": "A3_local_only",
+    "created_utc": "2026-07-17T00:35:14+00:00",
+    "git_revision": "7c554e5"
+  }
+}

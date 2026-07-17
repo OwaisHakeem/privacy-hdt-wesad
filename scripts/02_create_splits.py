@@ -59,6 +59,14 @@ import numpy as np
 import pandas as pd
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+# The data contract lives in src/data.py and is imported, never re-implemented.
+# Duplicating feature selection or label preparation across stages is what let
+# the previous pipeline's two experiment trees drift into contradicting each
+# other; the rule must exist exactly once.
+from src.data import feature_columns, prepare_labels, validate_schema  # noqa: E402
+
 # ---------------------------------------------------------------------
 # Loading
 # ---------------------------------------------------------------------
@@ -79,119 +87,20 @@ def sha256_of(path: Path, chunk: int = 1 << 20) -> str:
 
 
 def load_windows(cfg: dict) -> pd.DataFrame:
+    """Load the stage-01 table. Kept local: this stage is the only one that
+    may read the raw table before splits exist."""
     path = Path(cfg["input"]["windows_path"])
     if not path.exists():
         sys.exit(
             f"[A1] Input not found: {path}\n"
             "     Run stage 01 first, or correct input.windows_path in the config."
         )
-
     suffix = path.suffix.lower()
     if suffix == ".parquet":
-        df = pd.read_parquet(path)
-    elif suffix == ".csv":
-        df = pd.read_csv(path)
-    elif suffix == ".npz":
-        blob = np.load(path, allow_pickle=True)
-        keys = list(blob.keys())
-        if not {"X", "y", "subject"}.issubset(keys):
-            sys.exit(f"[A1] .npz must contain X, y, subject. Found: {keys}")
-        X = blob["X"]
-        df = pd.DataFrame(X, columns=[f"f{i:03d}" for i in range(X.shape[1])])
-        df[cfg["input"]["subject_col"]] = blob["subject"]
-        df[cfg["input"]["label_col"]] = blob["y"]
-        order_col = cfg["input"]["order_col"]
-        df[order_col] = (
-            blob["window_index"]
-            if "window_index" in keys
-            else df.groupby(cfg["input"]["subject_col"]).cumcount()
-        )
-    else:
-        sys.exit(f"[A1] Unsupported input format: {suffix}")
-
-    return df
-
-
-def validate_schema(df: pd.DataFrame, cfg: dict) -> None:
-    icfg = cfg["input"]
-    required = [icfg["subject_col"], icfg["label_col"], icfg["order_col"]]
-    missing = [c for c in required if c not in df.columns]
-    if missing:
-        sys.exit(
-            f"[A1] Missing required columns: {missing}\n"
-            f"     Columns present: {list(df.columns)[:12]} ...\n"
-            "     Adjust the input.*_col entries in the config to match stage 01."
-        )
-
-
-def feature_columns(df: pd.DataFrame, cfg: dict) -> list[str]:
-    """Select features by PREFIX WHITELIST, never by exclusion.
-
-    Stage 01 emits many numeric columns that are not features: window_id,
-    start_sample_chest, end_sample_chest, start_sec, end_sec, window_seconds,
-    original_wesad_label, and one *_label column per task. Selecting features
-    as 'numeric and not on a blacklist' admits all of them the moment stage 01
-    gains a column, which is precisely how the label reached the input matrix
-    in the earlier centralised baseline. A whitelist fails closed instead: an
-    unrecognised column is ignored rather than silently trained on.
-    """
-    icfg = cfg["input"]
-    prefixes = tuple(icfg.get("feature_prefixes") or [])
-    drop = set(icfg.get("drop_cols") or [])
-
-    if not prefixes:
-        sys.exit(
-            "[A1] input.feature_prefixes is empty. Refusing to guess the feature "
-            "set by exclusion — declare the prefixes explicitly (e.g. chest_, wrist_)."
-        )
-
-    cols = [
-        c
-        for c in df.columns
-        if c.startswith(prefixes)
-        and c not in drop
-        and pd.api.types.is_numeric_dtype(df[c])
-    ]
-
-    # Fail loudly if anything label-shaped slipped through the whitelist.
-    suspect = [c for c in cols if c.endswith(("_label", "_label_name", "_included"))]
-    if suspect:
-        sys.exit(f"[A1] Label-shaped columns matched the whitelist: {suspect}")
-
-    if not cols:
-        sys.exit(
-            f"[A1] No columns matched prefixes {prefixes}. "
-            f"Columns present: {list(df.columns)[:15]} ..."
-        )
-    return cols
-
-
-# ---------------------------------------------------------------------
-# Label handling
-# ---------------------------------------------------------------------
-
-
-def prepare_labels(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
-    """Retain protocol labels 1-4; attach both multiclass and binary targets.
-
-    Both tasks are derived from one filtered table, so the binary result is a
-    genuine ablation of the primary result rather than a parallel pipeline
-    with its own (divergent) protocol.
-    """
-    label_col = cfg["input"]["label_col"]
-    keep = cfg["task"]["keep_raw_labels"]
-
-    before = len(df)
-    df = df[df[label_col].isin(keep)].copy()
-    dropped = before - len(df)
-    print(f"[A1] Retained protocol labels {keep}: kept {len(df)}, dropped {dropped}")
-
-    mc_map = {int(k): int(v) for k, v in cfg["task"]["multiclass"]["label_map"].items()}
-    df["y_multiclass"] = df[label_col].map(mc_map).astype(int)
-
-    pos = set(cfg["task"]["binary"]["positive_labels"])
-    df["y_binary"] = df[label_col].isin(pos).astype(int)
-    return df
+        return pd.read_parquet(path)
+    if suffix == ".csv":
+        return pd.read_csv(path)
+    sys.exit(f"[A1] Unsupported input format: {suffix}")
 
 
 # ---------------------------------------------------------------------

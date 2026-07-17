@@ -1,0 +1,78 @@
+{
+  "seed": 2,
+  "n_train": 166,
+  "n_val": 41,
+  "n_test": 53,
+  "classes_in_train": 4,
+  "best_epoch": 13,
+  "epochs_run": 33,
+  "best_val_macro_f1": 1.0,
+  "test": {
+    "accuracy": 0.9622641509433962,
+    "balanced_accuracy": 0.9761904761904762,
+    "macro_f1": 0.9517857142857142,
+    "weighted_f1": 0.9640161725067385,
+    "per_class": {
+      "baseline": {
+        "precision": 1.0,
+        "recall": 0.9047619047619048,
+        "f1": 0.95,
+        "support": 21
+      },
+      "stress": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 11
+      },
+      "amusement": {
+        "precision": 0.75,
+        "recall": 1.0,
+        "f1": 0.8571428571428571,
+        "support": 6
+      },
+      "meditation": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 15
+      }
+    },
+    "confusion_matrix": [
+      [
+        19,
+        0,
+        2,
+        0
+      ],
+      [
+        0,
+        11,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        6,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        15
+      ]
+    ],
+    "n_samples": 53,
+    "auc_ovr_macro": 1.0
+  },
+  "subject": "S4",
+  "protocol": "within_subject",
+  "task": "multiclass",
+  "provenance": {
+    "stage": "A3_local_only",
+    "created_utc": "2026-07-17T00:35:15+00:00",
+    "git_revision": "7c554e5"
+  }
+}

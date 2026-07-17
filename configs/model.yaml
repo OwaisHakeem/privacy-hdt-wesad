@@ -1,0 +1,60 @@
+# =====================================================================
+# Model and training configuration
+# Project: privacy_hdt_wesad
+#
+# One architecture and one training contract for EVERY condition in the
+# study (centralised, local-only, FedAvg, DP-FedAvg). If these varied by
+# condition, the privacy-utility curve would confound the cost of privacy
+# with the cost of a different model, and the paper's central claim would
+# not be measurable.
+#
+# Read alongside configs/splits.yaml, which owns the data contract and the
+# normalisation policy. Neither file duplicates the other.
+# =====================================================================
+
+model:
+  architecture: "SimpleMLP"
+  hidden: [128, 64]
+  dropout: 0.2
+  # No BatchNorm: Opacus cannot compute per-sample gradients through it,
+  # so the identical module must serve both private and non-private runs.
+
+training:
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 64
+  max_epochs: 200
+  min_epochs: 10
+  patience: 20
+  tolerance: 0.0005
+  log_every: 20
+
+  # Inverse-frequency weights derived from the TRAINING partition only.
+  # WESAD is uneven (baseline ~39%, amusement ~12%); unweighted training
+  # lets a model ignore the smallest class while still scoring well on
+  # accuracy - the exact failure macro-F1 exists to expose.
+  class_weighted_loss: true
+
+evaluation:
+  # macro_f1 is the headline and the early-stopping criterion. Accuracy is
+  # recorded but must not lead: a model that never predicts amusement still
+  # scores respectably on accuracy while failing the task.
+  monitor_metric: "macro_f1"
+  # Per-class F1 is always reported alongside the macro average, because the
+  # macro number hides WHICH class collapsed - and under DP noise it is
+  # reliably the smallest class that goes first.
+
+experiment:
+  # Primary reported task. Binary is a secondary ablation over the same
+  # windows, not a separate pipeline.
+  task: "multiclass"
+  # Five seeds per condition. Single-run numbers are not reportable: without
+  # a spread, a reviewer cannot distinguish a real effect from a lucky
+  # initialisation. Seeds vary model init and batch order only - never the
+  # partition, which stage A2 fixed.
+  seeds: [1, 2, 3, 4, 5]
+  device: "auto"          # auto | cpu | cuda
+
+output:
+  results_dir: "results"
+  logs_dir: "results/logs"
