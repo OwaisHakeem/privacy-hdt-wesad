@@ -1,0 +1,46 @@
+# =====================================================================
+# Federated learning configuration
+# Project: privacy_hdt_wesad
+#
+# Read alongside configs/splits.yaml (data contract + normalisation) and
+# configs/model.yaml (architecture + training contract). This file owns
+# only the federation decisions. Stage C (DP-FedAvg) inherits every value
+# here unchanged and adds its privacy grid on top, so that the difference
+# between B and C is the privacy mechanism and nothing else.
+# =====================================================================
+
+federated:
+  # One subject = one client = one Human Digital Twin.
+  # Under LOSO that is 12 clients per fold; under within_subject, 15.
+
+  max_rounds: 200
+  min_rounds: 20
+  patience: 20          # rounds without validation improvement before stopping
+
+  local_epochs: 5       # E in McMahan et al. (2017)
+
+  # Fraction of clients participating per round. 1.0 for a 12-15 client
+  # cohort: partial participation is a large-scale cross-device concern, and
+  # sampling here would add variance on top of an already underpowered N=15
+  # study without answering any question the paper asks. Partial
+  # participation is available for a sensitivity check at stage G.
+  client_fraction: 1.0
+
+  # Local optimiser.
+  #   "adam" : matches the centralised baseline, so B-vs-A3 differs only in
+  #            federation. Optimiser state does not survive aggregation and
+  #            is reset each round - a known deviation from canonical FedAvg.
+  #   "sgd"  : canonical FedAvg. Cleaner theoretically, but then the
+  #            centralised comparison confounds federation with optimiser.
+  # Default "adam" for comparability; "sgd" retained as an ablation.
+  local_optimizer: "adam"
+  local_learning_rate: 0.001
+  local_momentum: 0.9   # used only when local_optimizer is sgd
+
+  log_every: 10
+
+  # Class weights are computed per client from that client's OWN labels.
+  # A client cannot observe the global class distribution; deriving weights
+  # globally would grant every client knowledge it does not possess and make
+  # the result unreproducible in deployment.
+  per_client_class_weights: true

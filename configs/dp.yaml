@@ -1,0 +1,94 @@
+# =====================================================================
+# Differential privacy configuration - Stage C
+# Project: privacy_hdt_wesad
+#
+# Inherits splits.yaml (data + normalisation), model.yaml (architecture),
+# and fedavg.yaml (federation) UNCHANGED. The only difference between
+# Stage B and Stage C is the privacy mechanism; if anything else varied,
+# the privacy-utility trade-off would confound two penalties and would not
+# be measurable.
+# =====================================================================
+
+privacy:
+  # ---------------------------------------------------------------
+  # Granularity
+  # ---------------------------------------------------------------
+  # "user"   : protects the participation of a whole CLIENT (a person).
+  #            Noise is applied at aggregation. This is the guarantee the
+  #            study requires: the Human Digital Twin is a person, so the
+  #            unit of protection must be the person.
+  # "sample" : protects individual windows via per-example gradient
+  #            clipping inside each client (Opacus). Cheaper in utility,
+  #            but answers a question this paper is not asking - an
+  #            adversary may still learn that you participated.
+  granularity: "user"
+
+  # ---------------------------------------------------------------
+  # Budget
+  # ---------------------------------------------------------------
+  # delta is fixed at 1e-4 for every condition and is a USER-level
+  # guarantee. The familiar delta <= 1/N convention is rejected here:
+  # with 12 clients per LOSO fold it would give delta ~ 0.083, i.e. a
+  # one-in-twelve chance of unbounded disclosure, which is not a
+  # guarantee anyone should publish.
+  delta: 0.0001
+
+  # Targets are specified in EPSILON space; the noise multiplier that
+  # achieves each target is then derived from the accountant. The reverse
+  # - choosing convenient noise and reporting whatever epsilon results -
+  # produced values near 47 and 78 in the previous pipeline, which
+  # correspond to no meaningful guarantee.
+  #
+  # Predicted from the accountant at 30 rounds, 12 clients, no
+  # amplification (noise/clip ratio on the averaged update = sigma/n):
+  #   eps 0.5 -> sigma 35.84 -> 2.99x   expected collapse
+  #   eps 1   -> sigma 19.22 -> 1.60x   expected collapse
+  #   eps 2   -> sigma 10.37 -> 0.86x   borderline
+  #   eps 4   -> sigma  5.68 -> 0.47x   expected to survive
+  #   eps 8   -> sigma  3.19 -> 0.27x   expected to survive
+  #   eps 16  -> sigma  1.84 -> 0.15x   weak privacy
+  # A ratio above 1.0 means the noise exceeds the entire clipped update.
+  # The low end is retained deliberately: demonstrating where user-level
+  # DP becomes unusable at a realistic cohort size is a result, not a
+  # failed run.
+  epsilon_targets: [0.5, 1.0, 2.0, 4.0, 8.0, 16.0]
+
+  # ---------------------------------------------------------------
+  # Mechanism
+  # ---------------------------------------------------------------
+  # Rounds are FIXED, not early-stopped: the noise multiplier is
+  # calibrated in advance for exactly this many compositions. Stopping
+  # early would leave budget unspent; stopping late would exceed it.
+  # 30 matches the mean round count at which non-private FedAvg converged
+  # (31.4), so the private and non-private conditions see a comparable
+  # training length.
+  rounds: 30
+
+  # L2 bound on each client's whole update, applied to the flattened
+  # vector rather than per layer: sensitivity is defined over the client's
+  # entire contribution.
+  #
+  # Sensitivity is C regardless of cohort size, so the noise added to the
+  # SUM does not shrink with more clients - only the averaging divides it.
+  # This is why small cohorts are punished so heavily.
+  clip_norm: 1.0
+
+  # Calibrate clip_norm from the observed median update norm in a
+  # non-private pilot round rather than assuming 1.0. Standard practice;
+  # an ill-fitting clip norm either destroys the signal (too small) or
+  # inflates the noise (too large).
+  auto_clip_from_pilot: true
+  pilot_rounds: 3
+
+  # Equal-weight averaging is REQUIRED under user-level DP. Weighting by
+  # client sample count (as Stage B does) would make the sensitivity of
+  # the sum depend on how much data a client holds, so a single clip norm
+  # could no longer bound one client's influence and the stated guarantee
+  # would not hold. The cost is that WESAD's uneven recording lengths
+  # (284-302 windows) no longer inform the average - a genuine
+  # consequence of the privacy requirement, to be stated in the Methods.
+  equal_weight_averaging: true
+
+  # RDP orders searched when converting to (eps, delta). A coarse grid
+  # would silently overstate epsilon.
+  alphas_note: "1.1..9.9 step 0.1, then 11..255 integers (see src/privacy.py)"

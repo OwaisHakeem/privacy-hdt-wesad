@@ -1,0 +1,159 @@
+{
+  "provenance": {
+    "stage": "B_fedavg_summary",
+    "created_utc": "2026-07-17T11:03:23+00:00",
+    "git_revision": "18c960c"
+  },
+  "protocol": "within_subject",
+  "task": "multiclass",
+  "n_runs": 5,
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "federated": {
+    "max_rounds": 200,
+    "min_rounds": 20,
+    "patience": 20,
+    "local_epochs": 5,
+    "client_fraction": 1.0,
+    "local_optimizer": "adam",
+    "local_learning_rate": 0.001,
+    "local_momentum": 0.9,
+    "log_every": 10,
+    "per_client_class_weights": true
+  },
+  "aggregation": "pooled: every test window weighted equally",
+  "aggregate": {
+    "macro_f1": {
+      "mean": 0.8199884207492509,
+      "std": 0.005479453712925849,
+      "min": 0.8155833533103088,
+      "max": 0.8285272158700486,
+      "n": 5
+    },
+    "accuracy": {
+      "mean": 0.8588669950738916,
+      "std": 0.006999148885902873,
+      "min": 0.8497536945812808,
+      "max": 0.8657635467980296,
+      "n": 5
+    },
+    "balanced_accuracy": {
+      "mean": 0.8330066613910969,
+      "std": 0.0111604637025659,
+      "min": 0.8210397301585427,
+      "max": 0.8447911622395187,
+      "n": 5
+    },
+    "weighted_f1": {
+      "mean": 0.8612074016730382,
+      "std": 0.004481545174260898,
+      "min": 0.8544476314662323,
+      "max": 0.8650257263884912,
+      "n": 5
+    }
+  },
+  "per_class_f1": {
+    "baseline": {
+      "mean": 0.8643754990537034,
+      "std": 0.02023765474086023,
+      "min": 0.845771144278607,
+      "max": 0.8864,
+      "n": 5
+    },
+    "stress": {
+      "mean": 0.9428365718631518,
+      "std": 0.0068806095831422795,
+      "min": 0.9329608938547486,
+      "max": 0.9479768786127167,
+      "n": 5
+    },
+    "amusement": {
+      "mean": 0.5618165156689059,
+      "std": 0.021061693200125287,
+      "min": 0.5340909090909091,
+      "max": 0.5882352941176471,
+      "n": 5
+    },
+    "meditation": {
+      "mean": 0.9109250964112426,
+      "std": 0.009254111549750282,
+      "min": 0.9002123142250531,
+      "max": 0.9204301075268817,
+      "n": 5
+    }
+  },
+  "communication": {
+    "state_bytes": 108304,
+    "mean_bytes_transferred": 122816736.0,
+    "mean_rounds": 37.8
+  },
+  "subject_weighted": {
+    "aggregation": "one score per (subject, seed); each PERSON weighted equally - comparable with stage 04",
+    "n_scores": 75,
+    "aggregate": {
+      "macro_f1": {
+        "mean": 0.8024293143892355,
+        "std": 0.10101245643795113,
+        "min": 0.6529605263157895,
+        "max": 1.0,
+        "n": 75
+      },
+      "accuracy": {
+        "mean": 0.8588105209023449,
+        "std": 0.07714324660022545,
+        "min": 0.7090909090909091,
+        "max": 1.0,
+        "n": 75
+      },
+      "balanced_accuracy": {
+        "mean": 0.8349381705251272,
+        "std": 0.0894327946435562,
+        "min": 0.6590909090909091,
+        "max": 1.0,
+        "n": 75
+      },
+      "weighted_f1": {
+        "mean": 0.847533155459473,
+        "std": 0.07733152667982254,
+        "min": 0.7090909090909091,
+        "max": 1.0,
+        "n": 75
+      }
+    },
+    "per_class_f1": {
+      "baseline": {
+        "mean": 0.8485290890940257,
+        "std": 0.13872150324674656,
+        "min": 0.42857142857142855,
+        "max": 1.0,
+        "n": 75
+      },
+      "stress": {
+        "mean": 0.927079802859513,
+        "std": 0.15898188709190855,
+        "min": 0.2857142857142857,
+        "max": 1.0,
+        "n": 75
+      },
+      "amusement": {
+        "mean": 0.5170249262719852,
+        "std": 0.3622148114033987,
+        "min": 0.0,
+        "max": 1.0,
+        "n": 75
+      },
+      "meditation": {
+        "mean": 0.917083439331418,
+        "std": 0.07385153335526166,
+        "min": 0.7692307692307693,
+        "max": 1.0,
+        "n": 75
+      }
+    }
+  }
+}

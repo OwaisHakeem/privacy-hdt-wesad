@@ -1,0 +1,281 @@
+{
+  "seed": 3,
+  "n_clients": 12,
+  "client_sizes": {
+    "S5": 296,
+    "S6": 294,
+    "S7": 293,
+    "S8": 296,
+    "S9": 294,
+    "S10": 302,
+    "S11": 296,
+    "S13": 297,
+    "S14": 297,
+    "S15": 298,
+    "S16": 296,
+    "S17": 296
+  },
+  "n_val": 580,
+  "n_test": 284,
+  "best_round": 6,
+  "rounds_run": 26,
+  "best_val_macro_f1": 0.8062769600958527,
+  "communication": {
+    "state_bytes": 108304,
+    "bytes_transferred": 67581696,
+    "bytes_per_round": 2599296
+  },
+  "test": {
+    "accuracy": 0.8732394366197183,
+    "balanced_accuracy": 0.9131578947368422,
+    "macro_f1": 0.8774362727357009,
+    "weighted_f1": 0.8737151868626969,
+    "per_class": {
+      "baseline": {
+        "precision": 1.0,
+        "recall": 0.7192982456140351,
+        "f1": 0.8367346938775511,
+        "support": 114
+      },
+      "stress": {
+        "precision": 0.6829268292682927,
+        "recall": 0.9333333333333333,
+        "f1": 0.7887323943661971,
+        "support": 60
+      },
+      "amusement": {
+        "precision": 0.813953488372093,
+        "recall": 1.0,
+        "f1": 0.8974358974358975,
+        "support": 35
+      },
+      "meditation": {
+        "precision": 0.974025974025974,
+        "recall": 1.0,
+        "f1": 0.9868421052631579,
+        "support": 75
+      }
+    },
+    "confusion_matrix": [
+      [
+        82,
+        26,
+        4,
+        2
+      ],
+      [
+        0,
+        56,
+        4,
+        0
+      ],
+      [
+        0,
+        0,
+        35,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        75
+      ]
+    ],
+    "n_samples": 284,
+    "auc_ovr_macro": 0.9629005830098368
+  },
+  "test_per_subject": null,
+  "history": [
+    {
+      "round": 1,
+      "n_clients": 12,
+      "mean_local_loss": 0.7600960892736492,
+      "val_score": 0.7023264820244111,
+      "cumulative_bytes": 2599296
+    },
+    {
+      "round": 2,
+      "n_clients": 12,
+      "mean_local_loss": 0.2771030575620684,
+      "val_score": 0.7289823959996284,
+      "cumulative_bytes": 5198592
+    },
+    {
+      "round": 3,
+      "n_clients": 12,
+      "mean_local_loss": 0.14732624448097079,
+      "val_score": 0.7602656476551581,
+      "cumulative_bytes": 7797888
+    },
+    {
+      "round": 4,
+      "n_clients": 12,
+      "mean_local_loss": 0.11112494226209765,
+      "val_score": 0.7943802171072389,
+      "cumulative_bytes": 10397184
+    },
+    {
+      "round": 5,
+      "n_clients": 12,
+      "mean_local_loss": 0.08875297611879916,
+      "val_score": 0.7850173880217496,
+      "cumulative_bytes": 12996480
+    },
+    {
+      "round": 6,
+      "n_clients": 12,
+      "mean_local_loss": 0.07743320877083842,
+      "val_score": 0.8062769600958527,
+      "cumulative_bytes": 15595776
+    },
+    {
+      "round": 7,
+      "n_clients": 12,
+      "mean_local_loss": 0.07482810920981019,
+      "val_score": 0.800577034368698,
+      "cumulative_bytes": 18195072
+    },
+    {
+      "round": 8,
+      "n_clients": 12,
+      "mean_local_loss": 0.06552165400555308,
+      "val_score": 0.8037098719213268,
+      "cumulative_bytes": 20794368
+    },
+    {
+      "round": 9,
+      "n_clients": 12,
+      "mean_local_loss": 0.06305546249184478,
+      "val_score": 0.7979807159673176,
+      "cumulative_bytes": 23393664
+    },
+    {
+      "round": 10,
+      "n_clients": 12,
+      "mean_local_loss": 0.059181029706626524,
+      "val_score": 0.7847313239444265,
+      "cumulative_bytes": 25992960
+    },
+    {
+      "round": 11,
+      "n_clients": 12,
+      "mean_local_loss": 0.05250577941141812,
+      "val_score": 0.782867649505321,
+      "cumulative_bytes": 28592256
+    },
+    {
+      "round": 12,
+      "n_clients": 12,
+      "mean_local_loss": 0.055045968787014586,
+      "val_score": 0.7802268194399218,
+      "cumulative_bytes": 31191552
+    },
+    {
+      "round": 13,
+      "n_clients": 12,
+      "mean_local_loss": 0.054768175666961426,
+      "val_score": 0.782368273970887,
+      "cumulative_bytes": 33790848
+    },
+    {
+      "round": 14,
+      "n_clients": 12,
+      "mean_local_loss": 0.04630204412589753,
+      "val_score": 0.7833395156616256,
+      "cumulative_bytes": 36390144
+    },
+    {
+      "round": 15,
+      "n_clients": 12,
+      "mean_local_loss": 0.047494989644543094,
+      "val_score": 0.7793244326347701,
+      "cumulative_bytes": 38989440
+    },
+    {
+      "round": 16,
+      "n_clients": 12,
+      "mean_local_loss": 0.049742337116242916,
+      "val_score": 0.7770641924280763,
+      "cumulative_bytes": 41588736
+    },
+    {
+      "round": 17,
+      "n_clients": 12,
+      "mean_local_loss": 0.0472950443529954,
+      "val_score": 0.784579007452804,
+      "cumulative_bytes": 44188032
+    },
+    {
+      "round": 18,
+      "n_clients": 12,
+      "mean_local_loss": 0.03751890899346868,
+      "val_score": 0.7795042483250856,
+      "cumulative_bytes": 46787328
+    },
+    {
+      "round": 19,
+      "n_clients": 12,
+      "mean_local_loss": 0.047229555533364984,
+      "val_score": 0.78676865599667,
+      "cumulative_bytes": 49386624
+    },
+    {
+      "round": 20,
+      "n_clients": 12,
+      "mean_local_loss": 0.04222436706213493,
+      "val_score": 0.7827557376413359,
+      "cumulative_bytes": 51985920
+    },
+    {
+      "round": 21,
+      "n_clients": 12,
+      "mean_local_loss": 0.039326065637151165,
+      "val_score": 0.7806212754117134,
+      "cumulative_bytes": 54585216
+    },
+    {
+      "round": 22,
+      "n_clients": 12,
+      "mean_local_loss": 0.040266835249071924,
+      "val_score": 0.7846150205175653,
+      "cumulative_bytes": 57184512
+    },
+    {
+      "round": 23,
+      "n_clients": 12,
+      "mean_local_loss": 0.03553410096868539,
+      "val_score": 0.7824686742215652,
+      "cumulative_bytes": 59783808
+    },
+    {
+      "round": 24,
+      "n_clients": 12,
+      "mean_local_loss": 0.03970792165480182,
+      "val_score": 0.7840926732138638,
+      "cumulative_bytes": 62383104
+    },
+    {
+      "round": 25,
+      "n_clients": 12,
+      "mean_local_loss": 0.03732745808264062,
+      "val_score": 0.7862296918767506,
+      "cumulative_bytes": 64982400
+    },
+    {
+      "round": 26,
+      "n_clients": 12,
+      "mean_local_loss": 0.03209566982981949,
+      "val_score": 0.7877206907540684,
+      "cumulative_bytes": 67581696
+    }
+  ],
+  "split": "fold_00",
+  "protocol": "loso",
+  "task": "multiclass",
+  "provenance": {
+    "stage": "B_fedavg",
+    "created_utc": "2026-07-17T01:44:12+00:00",
+    "git_revision": "18c960c"
+  }
+}
