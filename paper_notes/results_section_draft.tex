@@ -1,0 +1,181 @@
+% =====================================================================
+% RESULTS SECTION — draft 1
+% Paper #1, privacy_hdt_wesad
+% Register: formal academic, British English. Numbers shown explicitly.
+% Every value traces to paper_notes/*.md; nothing is invented.
+% Figures referenced: fig1_money_plot, fig2_rare_class, fig3_task_dependence.
+% =====================================================================
+
+\section{Results}
+\label{sec:results}
+
+All results follow the leave-one-subject-out (LOSO) protocol over the fifteen
+WESAD participants, with every condition repeated across five random seeds.
+Macro-averaged $F_1$ is the headline metric throughout, chosen because the
+four-class problem is imbalanced (baseline $39.5\%$, meditation $26.1\%$, stress
+$22.2\%$, amusement $12.2\%$) and macro-averaging weights each class equally.
+Chance-level macro-$F_1$ for the four-class task is $0.2402$.
+
+\subsection{Baselines}
+\label{sec:results-baselines}
+
+Under the LOSO protocol, the centralised model, in which all training subjects'
+data are pooled, attains a macro-$F_1$ of $0.7812 \pm 0.0983$. This figure is
+representative of the WESAD literature rather than a headline in its own right,
+and it establishes the ceiling against which the privacy-preserving conditions
+are measured. The aggregate conceals a pronounced disparity across classes:
+stress, baseline, and meditation are recognised reliably ($F_1$ of $0.9183$,
+$0.9043$, and $0.8702$ respectively), whereas amusement attains only
+$0.4320 \pm 0.3088$. The large standard deviation on amusement reflects a
+near-dichotomous distribution across subjects; the class is recognised well for
+some participants and not at all for others, with per-subject $F_1$ ranging from
+$0.000$ to $0.862$.
+
+When each subject is instead modelled on their own data under a within-subject
+protocol, macro-$F_1$ rises to $0.9088 \pm 0.1003$, exceeding the within-subject
+centralised model ($0.8540$) by $0.0548$. Personal physiological data therefore
+fits an individual better than pooled data does, a point that bears on the
+interpretation of the federated results below.
+
+\subsection{The cost of federation}
+\label{sec:results-federation}
+
+Replacing the centralised model with federated averaging, holding every other
+component fixed, leaves aggregate utility essentially unchanged under the LOSO
+protocol: federated averaging attains a macro-$F_1$ statistically equivalent to
+the centralised model. The equivalence is not, however, uniform across classes.
+The entire penalty of federation falls on a single class: amusement declines by
+$0.095$, while baseline, stress, and meditation are unaffected to within seed
+variation.
+
+This selectivity is informative. Amusement is the class whose physiological
+signature is most strongly personal, being tied to individual valence responses;
+federated averaging, which combines model updates across participants, dilutes
+exactly the idiosyncratic signal on which amusement recognition depends. The
+harm of federation is thus attributable to a specific property of the affected
+class, namely that its signature transfers poorly between people, rather than to
+a generic degradation.
+
+\subsection{The cost of user-level privacy}
+\label{sec:results-user-dp}
+
+Adding user-level differential privacy to the federated model, so that the
+participation of any single subject is protected, imposes a steep and
+non-linear utility cost (Fig.~\ref{fig:money}a, blue). Table~\ref{tab:user-dp}
+reports macro-$F_1$ across the budget grid. At $\varepsilon = 0.5$ the model
+attains $0.2493 \pm 0.0779$, which a one-sample test cannot distinguish from
+chance ($t = 1.20$, $p = 0.25$); strong user-level privacy is therefore not
+merely expensive but unattainable at this cohort size. Utility increases
+monotonically with the budget, and a pronounced cliff separates $\varepsilon = 4$
+($0.3658$) from $\varepsilon = 8$ ($0.5439$), a step of $0.178$ that exceeds any
+other interval in the grid. Only at $\varepsilon \geq 8$ does the model recover a
+usable fraction of the non-private result.
+
+\begin{table}[t]
+\centering
+\caption{User-level DP-FedAvg, four-class LOSO. Macro-$F_1$ and the amusement
+$F_1$ across the privacy grid. Chance macro-$F_1$ is $0.2402$.}
+\label{tab:user-dp}
+\begin{tabular}{rccc}
+\toprule
+$\varepsilon$ & $\sigma$ & Macro-$F_1$ & Amusement $F_1$ \\
+\midrule
+0.5  & 35.84 & $0.2493 \pm 0.0779$ & 0.1280 \\
+1.0  & 19.22 & $0.3038 \pm 0.1103$ & 0.1367 \\
+2.0  & 10.37 & $0.3523 \pm 0.1177$ & 0.1584 \\
+4.0  &  5.68 & $0.3658 \pm 0.1215$ & 0.1790 \\
+8.0  &  3.19 & $0.5439 \pm 0.1024$ & 0.2320 \\
+16.0 &  1.84 & $0.6054 \pm 0.1108$ & 0.2480 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Privacy budgets are task-dependent}
+\label{sec:results-task}
+
+The severity of the privacy penalty is not a property of the mechanism alone but
+of the task to which it is applied (Fig.~\ref{fig:task}). Repeating the
+user-level sweep on the binary stress-versus-rest task, with the identical
+mechanism and budget grid, yields a markedly gentler degradation: binary
+macro-$F_1$ remains at $0.6200$ at $\varepsilon = 0.5$, retaining roughly
+two-thirds of its non-private value, precisely where the four-class task has
+fallen to chance. A privacy budget cannot therefore be quoted independently of
+the task it protects, a caveat of direct relevance to the common practice of
+demonstrating private federated learning on binary stress detection.
+
+\subsection{The cost of sample-level privacy}
+\label{sec:results-sample-dp}
+
+Sample-level differential privacy, which protects the participation of any single
+ten-second window rather than of a whole subject, benefits from privacy
+amplification by Poisson subsampling and consequently retains substantially more
+aggregate utility than user-level privacy at every budget
+(Fig.~\ref{fig:money}a, orange; Table~\ref{tab:sample-dp}). At $\varepsilon = 2$
+it attains $0.6190$, which is $81\%$ of the non-private ceiling, where user-level
+privacy attains $46\%$. On aggregate utility alone, sample-level privacy is the
+superior mechanism at every point in the grid.
+
+This advantage is, however, purchased at a cost that aggregate utility conceals.
+The rarest class is eliminated entirely: amusement $F_1$ is exactly $0.0000$ at
+$\varepsilon = 2$, $4$, and $8$, and negligible at the remaining budgets
+(Fig.~\ref{fig:rare}). Under user-level privacy the same class retains an $F_1$
+between $0.128$ and $0.248$ across the identical grid. A diagnostic run with the
+gradient-clipping norm held fixed but the noise removed recovered the class
+completely (amusement $F_1 = 0.9091$), which localises the cause to the additive
+noise rather than to clipping. The mechanism is a direct consequence of what
+sample-level privacy protects: amusement constitutes approximately $36$ windows
+per subject, so a Poisson-subsampled mini-batch of size $32$ contains on average
+about four amusement examples, whose per-example gradient signal the additive
+noise overwhelms.
+
+\begin{table}[t]
+\centering
+\caption{Sample-level DP-SGD, four-class LOSO. Macro-$F_1$ and amusement $F_1$
+across the privacy grid, with the user-level macro-$F_1$ repeated for
+comparison.}
+\label{tab:sample-dp}
+\begin{tabular}{rcccc}
+\toprule
+$\varepsilon$ & $\sigma$ & Macro-$F_1$ & Amusement $F_1$ & User-level macro \\
+\midrule
+0.5  & 24.52 & $0.3812 \pm 0.1159$ & 0.0076 & 0.2493 \\
+1.0  & 13.19 & $0.5431 \pm 0.0732$ & 0.0007 & 0.3038 \\
+2.0  &  7.14 & $0.6190 \pm 0.0573$ & 0.0000 & 0.3523 \\
+4.0  &  3.99 & $0.6627 \pm 0.0286$ & 0.0000 & 0.3658 \\
+8.0  &  2.33 & $0.6708 \pm 0.0281$ & 0.0000 & 0.5439 \\
+16.0 &  1.46 & $0.6841 \pm 0.0318$ & 0.0384 & 0.6054 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Empirical privacy is identical across mechanisms}
+\label{sec:results-mia}
+
+The formal privacy budget bounds a worst-case adversary; whether that adversary
+is realised is an empirical question, addressed here with a calibrated
+membership-inference attack under an attack-slice design that removes the
+LOSO generalisation-gap confound. Against the non-private model the attack
+attains an AUC of $0.5481 \pm 0.0768$ (user-level pipeline) and $0.5488 \pm
+0.0771$ (sample-level pipeline); the agreement of these two independent runs on
+the same non-private model, to within $0.0007$, serves as a reproducibility
+check. The small advantage above chance indicates that the model leaks a modest
+but genuine amount of membership information when undefended.
+
+Any positive privacy budget extinguishes this signal. Across the entire grid
+$\varepsilon \in [0.5, 16]$ the attack AUC lies between $0.4976$ and $0.5159$ for
+both mechanisms, statistically indistinguishable from the chance value of
+$0.500$ (Fig.~\ref{fig:money}b). The two mechanisms, whose utility curves
+diverge by as much as $0.30$ macro-$F_1$, are indistinguishable in empirical
+privacy at every budget. The formally weak guarantee at $\varepsilon = 8$
+delivers the same empirical protection as the formally strong guarantee at
+$\varepsilon = 0.5$, for both granularities.
+
+Two properties of the attack support this reading. The difficulty-calibrated
+variant of the attack does not exceed the raw variant on the non-private model
+($0.5377$ against $0.5481$), indicating that the models do not encode strong
+per-window membership signal for a more precise attack to exploit. The
+within-subject memorisation gap, measured as the difference between a subject's
+training-window and held-out-window losses, is small but reliable on the
+non-private model ($-0.106 \pm 0.053$) and contracts monotonically towards zero
+as the budget tightens, reaching $-0.009 \pm 0.009$ at $\varepsilon = 0.5$;
+increasing privacy demonstrably reduces memorisation.

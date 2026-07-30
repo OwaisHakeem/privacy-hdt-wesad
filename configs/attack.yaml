@@ -1,0 +1,42 @@
+# =====================================================================
+# Membership inference configuration - Stage D
+# Project: privacy_hdt_wesad
+#
+# Inherits splits/model/fedavg/dp configs unchanged; adds only the attack
+# parameters. The training config is IDENTICAL to Stage C so the attack
+# measures the same mechanism, but on attack-slice splits (07a) rather than
+# the standard splits, because membership inference requires held-out member
+# windows to avoid the generalisation-gap confound.
+# =====================================================================
+
+attack:
+  # Attack-slice splits produced by 07a_build_attack_splits.py.
+  splits_subdir: "attack"
+
+  # Membership signals scored per window. All are computed; AUC is reported
+  # for each. cross_entropy is primary (Yeom et al. 2018): members incur
+  # lower loss. negative_entropy is the label-free variant, reported as a
+  # secondary attacker that does not require knowing the true label.
+  signals: ["cross_entropy", "confidence", "negative_entropy"]
+
+  # Granularities.
+  #   window : every attack-slice window is a point. Statistically stable
+  #            (thousands of points) but attacks a guarantee the user-level
+  #            mechanism did not formally make.
+  #   user   : each subject's window scores aggregated to one per person,
+  #            matching the user-level DP guarantee. Few points per fold, so
+  #            pooled across all 15 folds.
+  granularities: ["window", "user"]
+  user_aggregation: "mean"        # mean | median (median = robustness check)
+
+  # False-positive rates at which TPR is reported. The low-FPR regime
+  # (Carlini et al. 2022) is where a privacy breach actually lives: an
+  # attacker who confidently identifies even a few members has succeeded,
+  # and average-case accuracy hides this.
+  report_tpr_at_fpr: [0.001, 0.01, 0.05]
+
+  # Non-member definition. "test" = the held-out test subject only, which was
+  # used in neither training nor model selection and is therefore the clean
+  # non-member. Validation subjects are excluded: they informed model
+  # selection and would contaminate the comparison.
+  non_member: "test"

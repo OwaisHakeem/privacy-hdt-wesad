@@ -1,0 +1,82 @@
+# =====================================================================
+# Sample-level differential privacy configuration - Stage C-prime
+# Project: privacy_hdt_wesad
+#
+# Inherits splits.yaml, model.yaml, and fedavg.yaml UNCHANGED. The only
+# differences from Stage C (dp.yaml) are:
+#   * granularity is "sample" (protects each 10 s window, not the person)
+#   * mechanism is DP-SGD via Opacus in each client's local training
+#   * server aggregation is plain FedAvg (no server-side noise)
+#   * amplification by Poisson subsampling reduces the required noise
+#
+# Everything else - epsilon grid, delta, rounds, seeds - matches Stage C
+# so results are DIRECTLY COMPARABLE.
+# =====================================================================
+
+privacy_sample:
+  # ---------------------------------------------------------------
+  # Granularity - the substantive difference
+  # ---------------------------------------------------------------
+  # "sample" : protects the participation of any single 10 s window in a
+  #            client's training data. Weaker than user-level: an adversary
+  #            can still learn whether a person participated, only not what
+  #            windows contributed to the model.
+  # This is the guarantee most FL-with-DP papers report. It is included
+  # here as a comparator: does the formal-vs-empirical decoupling seen at
+  # user level (Stage D) hold across mechanisms, or is it specific to
+  # user-level DP?
+  granularity: "sample"
+
+  # ---------------------------------------------------------------
+  # Budget - identical to Stage C for comparability
+  # ---------------------------------------------------------------
+  delta: 0.0001
+  epsilon_targets: [0.5, 1.0, 2.0, 4.0, 8.0, 16.0]
+
+  # ---------------------------------------------------------------
+  # Mechanism
+  # ---------------------------------------------------------------
+  # Rounds fixed to match Stage C. The Opacus accountant is calibrated
+  # ONCE PER CLIENT for total_local_epochs = rounds * local_epochs, so
+  # after all rounds each client has spent exactly (epsilon, delta).
+  rounds: 30
+
+  # Local optimiser is Adam, matching Stage B/C for comparability. In the
+  # DP-SGD literature, "SGD" refers to the noise mechanism, not the base
+  # optimiser; Opacus wraps Adam correctly.
+  local_optimizer: "adam"
+
+  # Batch size for Poisson subsampling. With ~230 client windows and
+  # batch_size 32, sample rate q ~= 0.14. Amplification via Poisson
+  # subsampling is what makes sample-level DP feasible at strong budgets
+  # where user-level (no subsampling, sample rate 1.0) collapsed.
+  batch_size: 32
+
+  # L2 clip norm on per-example gradients. Standard practice picks this
+  # via a pilot; a pilot run without noise is performed to observe the
+  # per-example gradient norm distribution and its median is used.
+  # 1.0 is the Opacus default and a reasonable starting point.
+  clip_norm: 3.0
+  auto_clip_from_pilot: true
+  pilot_rounds: 2
+
+  # Learning rate for the local optimiser. Matched to Stage B/C.
+  local_learning_rate: 0.001
+  weight_decay: 0.0001
+
+# =====================================================================
+# Compute planning notes (informational, not consumed by code)
+# =====================================================================
+#
+# Sample-level DP requires per-example gradient computation, which is
+# 3-5x slower than plain training on CPU and 5-10x faster on GPU vs CPU.
+#
+# Estimated compute for the full sweep (6 epsilons x 15 folds x 5 seeds
+# = 450 runs, plus the non-private anchor at 75 runs = 525 total):
+#
+#   CPU (desktop):        ~5.5 days
+#   Modest GPU (T4):      ~10 hours
+#   Strong GPU (3090+):   ~4 hours
+#
+# The Opacus per-example gradient overhead is the reason for this;
+# it does not affect correctness. GPU is strongly recommended.

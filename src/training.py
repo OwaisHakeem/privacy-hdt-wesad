@@ -32,9 +32,30 @@ from torch.utils.data import DataLoader, TensorDataset
 
 
 def make_loader(
-    X: np.ndarray, y: np.ndarray, batch_size: int, shuffle: bool, seed: int | None = None
+    X: np.ndarray, y: np.ndarray, batch_size: int, shuffle: bool, seed: int | None = None,
+    device=None
 ) -> DataLoader:
-    ds = TensorDataset(torch.from_numpy(X), torch.from_numpy(y))
+    """Build a DataLoader, optionally with the tensors resident on `device`.
+
+    Passing device places the whole tensor on the GPU once, instead of copying
+    every mini-batch across the PCIe bus on each step. For this study the entire
+    dataset is roughly 2.5 MB and a single client's share is around 130 KB, so
+    residency costs nothing and removes what is otherwise the dominant per-step
+    cost: the model has only 27k parameters, so a batch of 32 finishes in
+    microseconds and the host-to-device copy dwarfs the compute.
+
+    This changes no numbers. The data, the batching, the shuffling generator
+    and the arithmetic are identical; only the location of the bytes differs.
+
+    Leave device as None (the default) when using num_workers > 0, since CUDA
+    tensors cannot cross a worker process boundary.
+    """
+    xt = torch.from_numpy(X)
+    yt = torch.from_numpy(y)
+    if device is not None:
+        xt = xt.to(device)
+        yt = yt.to(device)
+    ds = TensorDataset(xt, yt)
     generator = None
     if shuffle and seed is not None:
         generator = torch.Generator()
@@ -52,7 +73,10 @@ def predict(model: nn.Module, loader: DataLoader, device) -> tuple[np.ndarray, n
         proba = torch.softmax(logits, dim=1)
         preds.append(logits.argmax(dim=1).cpu().numpy())
         probas.append(proba.cpu().numpy())
-        ys.append(yb.numpy())
+        # .cpu() before .numpy(): labels may already be GPU-resident when the
+        # loader was built with device= (see make_loader). Calling .numpy()
+        # directly on a CUDA tensor raises.
+        ys.append(yb.cpu().numpy())
     return (
         np.concatenate(ys),
         np.concatenate(preds),

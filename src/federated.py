@@ -133,7 +133,7 @@ class Client:
 # ---------------------------------------------------------------------
 
 
-def fedavg_aggregate(states: list[dict], n_samples: list[int]) -> dict:
+def fedavg_aggregate(states, n_samples=None, counts=None) -> dict:
     """Weighted parameter average, weights proportional to client sample count.
 
     This is FedAvg as specified by McMahan et al. (2017): each client's
@@ -141,7 +141,25 @@ def fedavg_aggregate(states: list[dict], n_samples: list[int]) -> dict:
     instead would be a different algorithm and would misreport the effect of
     the cohort's uneven recording lengths (WESAD subjects contribute 284-302
     windows), so the weighting is explicit rather than incidental.
+
+    Signature note. run_federated calls its aggregator as
+    aggregate(global_state, states, counts) so that the differentially private
+    aggregator (which needs the global state) and this one share a single call
+    site. This function does not need the global state, so it accepts the
+    3-argument form by treating the first argument as global_state and the
+    second as the client states, while still supporting the original
+    2-argument form fedavg_aggregate(states, n_samples) used by the self-test.
     """
+    # Disambiguate the two supported calling conventions.
+    if counts is not None:
+        # 3-arg form: (global_state, states, counts). First arg is ignored.
+        states, n_samples = n_samples, counts
+    elif n_samples is not None and states and not isinstance(states[0], dict):
+        # First positional arg was global_state (not a list of state dicts);
+        # shift: (global_state, states) with counts still to come is invalid,
+        # so this branch only guards against misuse.
+        raise ValueError("fedavg_aggregate: ambiguous arguments; pass (states, n_samples) or (global_state, states, counts).")
+
     if not states:
         raise ValueError("No client states to aggregate.")
     if len(states) != len(n_samples):

@@ -15,3 +15,8 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+
+# Catch-all: never commit any data
+data/
+results/
+results/

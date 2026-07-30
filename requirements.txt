@@ -1,0 +1,14 @@
+# Core environment used for the reported results.
+# Install with:  pip install -r requirements.txt
+#
+# PyTorch with CUDA 12.8 is best installed from the official index; the plain
+# pip line below works but see https://pytorch.org for the CUDA-matched build:
+#   pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128
+
+torch==2.11.0
+opacus==1.6.0
+numpy
+scikit-learn
+matplotlib
+pandas
+pyyaml

@@ -1,0 +1,43 @@
+# ---- Data: NEVER commit raw physiological data ----
+# WESAD has its own licence/redistribution terms; download it from the
+# official source instead. Your own collected data (ethics CEBE_RE-26-012)
+# must not be published here either.
+data/
+*.pkl
+*.csv
+*.npy
+*.npz
+WESAD/
+raw/
+windows/
+
+# ---- Large / regenerable outputs ----
+# Per-run result JSONs can be kept if small; exclude bulky logs and models.
+results/logs/
+*.log
+*.pt
+*.pth
+*.ckpt
+checkpoints/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# ---- Private working notes (optional: remove this line if you want them public) ----
+paper_notes/
