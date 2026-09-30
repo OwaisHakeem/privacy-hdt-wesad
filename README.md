@@ -28,11 +28,11 @@ budget overstates the empirically measured risk.
 
 See `requirements.txt`. Core environment used for the reported results:
 
-- Python 3.11
-- PyTorch 2.11.0 (CUDA 12.8)
-- Opacus 1.6.0
-- NumPy, scikit-learn, matplotlib
-- A single NVIDIA GeForce RTX 4080 SUPER GPU (CPU also works, more slowly)
+* Python 3.11
+* PyTorch 2.11.0 (CUDA 12.8)
+* Opacus 1.6.0
+* NumPy, scikit-learn, matplotlib
+* A single NVIDIA GeForce RTX 4080 SUPER GPU (CPU also works, more slowly)
 
 Install:
 
@@ -45,9 +45,9 @@ pip install -r requirements.txt
 The WESAD dataset is **not** redistributed here. Download it from the official
 source and place it where the config expects:
 
-- Schmidt et al., *Introducing WESAD, a Multimodal Dataset for Wearable Stress
-  and Affect Detection*, ICMI 2018.
-  DOI: [10.1145/3242969.3242985](https://doi.org/10.1145/3242969.3242985)
+* Schmidt et al., *Introducing WESAD, a Multimodal Dataset for Wearable Stress
+and Affect Detection*, ICMI 2018.
+DOI: [10.1145/3242969.3242985](https://doi.org/10.1145/3242969.3242985)
 
 Then build the windowed feature set with the dataset script (below).
 
@@ -55,22 +55,22 @@ Then build the windowed feature set with the dataset script (below).
 
 Scripts are numbered in run order. Configuration lives in `configs/`.
 
-| Step | Script | Produces |
-|------|--------|----------|
-| Build dataset | `scripts/01_build_dataset.py` | windowed features |
-| Create splits | `scripts/02_create_splits.py` | LOSO folds |
-| Centralised baseline | `scripts/03_centralised_baseline.py` | Stage A |
-| Local-only baseline | `scripts/04_local_only_baseline.py` | Stage A |
-| FedAvg baseline | `scripts/05_fedavg_baseline.py` | Stage B |
-| User-level DP sweep | `scripts/06_dp_fedavg_sweep.py` | Stage C |
-| Membership inference | `scripts/07_membership_inference.py` | Stage D |
-| Sample-level DP sweep | `scripts/08_dp_sample_sweep.py` | Stage C-prime |
+|Step|Script|Produces|
+|-|-|-|
+|Build dataset|`scripts/01\\\\\\\_build\\\\\\\_dataset.py`|windowed features|
+|Create splits|`scripts/02\\\\\\\_create\\\\\\\_splits.py`|LOSO folds|
+|Centralised baseline|`scripts/03\\\\\\\_centralised\\\\\\\_baseline.py`|Stage A|
+|Local-only baseline|`scripts/04\\\\\\\_local\\\\\\\_only\\\\\\\_baseline.py`|Stage A|
+|FedAvg baseline|`scripts/05\\\\\\\_fedavg\\\\\\\_baseline.py`|Stage B|
+|User-level DP sweep|`scripts/06\\\\\\\_dp\\\\\\\_fedavg\\\\\\\_sweep.py`|Stage C|
+|Membership inference|`scripts/07\\\\\\\_membership\\\\\\\_inference.py`|Stage D|
+|Sample-level DP sweep|`scripts/08\\\\\\\_dp\\\\\\\_sample\\\\\\\_sweep.py`|Stage C-prime|
 
 Core modules are in `src/` (data handling, model, federated training, the two
 DP mechanisms, metrics, and the attack).
 
 Figures are generated from the stored per-run results by the scripts in
-`paper_figures/`; each figure loads its values directly from the result JSON
+`paper\\\\\\\_figures/`; each figure loads its values directly from the result JSON
 files, so the figures trace to source data rather than to transcribed numbers.
 
 ## Reproducibility
@@ -80,11 +80,7 @@ leave-one-subject-out folds × 5 seeds per condition. Differential-privacy
 guarantees are verified against the accountant with a self-test before any
 result is accepted.
 
-## Citation
-
-If you use this code, please cite the paper (details to be added on
-publication).
-
 ## Licence
 
 MIT — see `LICENSE`.
+
